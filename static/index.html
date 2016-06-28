@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <script src="bower_components/vue/dist/vue.min.js"></script>
+        <script src="bower_components/vue-resource/dist/vue-resource.min.js"></script>
+        <script src="bower_components/masonry/dist/masonry.pkgd.min.js"></script>
+        <script src="bower_components/underscore/underscore-min.js"></script>
+        <title>Stroller</title>
+    </head>
+    <body id="app" style="padding-top: 70px;">
+
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <input type="checkbox" v-model="flickr">
+                <label for="checkbox">Flickr</label>
+                <input type="checkbox" v-model="panoramio">
+                <label for="checkbox">Panoramio</label>
+                <span>longitude</span>
+                <input type="number" v-model="longitude">
+                <span>latitude</span>
+                <input type="number" v-model="latitude">
+                <div class="btn btn-default" v-on:click="search">検索</div>
+                <br>
+                <input type="radio" value="north" v-model="orientation">
+                <label for="north">North</label>
+                <input type="radio" value="east" v-model="orientation">
+                <label for="east">East</label>
+                <input type="radio" value="south" v-model="orientation">
+                <label for="south">South</label>
+                <input type="radio" value="west" v-model="orientation">
+                <label for="west">West</label>
+                <input type="radio" value="all" v-model="orientation">
+                <label for="all">All</label>
+            </div>
+        </nav>
+
+        <div class="masonry row container-fluid">
+          <div class="item col-md-3" v-for="item in filteredPhotoList">
+            <div class="thumbnail">
+              <img src="{{item.url}}">
+            {{item.title.substr(0,10)}}
+            </div>
+          </div>
+        </div>
+
+    </body>
+    <script type="text/javascript">
+
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                photoList : [],
+                flickr: false,
+                panoramio: true,
+                longitude: 139.762253,
+                latitude: 35.682131,
+                orientation: "all"
+
+            },
+            computed: {
+                filteredPhotoList: function(){
+                    return _.filter(this.photoList, function(item){
+                        var diffX = this.longitude - item.longitude;
+                        var diffY = this.latitude - item.latitude;
+                        if(this.orientation=="north"){
+                            return diffY < 0;
+                        }
+                        else if(this.orientation=="south"){
+                            return diffY > 0;
+                        }
+                        else if(this.orientation=="east"){
+                            return diffX < 0;
+                        }
+                        else if(this.orientation=="west"){
+                            return diffX > 0;
+                        }
+                        else {
+                            return true;
+                        }
+                    }.bind(this));
+                }
+            },
+            methods: {
+                search: function(){
+                    this.$http.get('/getPhotos', {params:{
+                        flickr:this.flickr,
+                        panoramio:this.panoramio,
+                        longitude:this.longitude,
+                        latitude:this.latitude
+                    }}).then(function(data){
+                        this.photoList = data.json();
+                    });
+                }
+            }
+        });
+
+        vm.$watch('filteredPhotoList', function(){
+            var masonry = new Masonry('.masonry', {
+                itemSelector: '.item',
+            });
+        });
+
+
+    </script>
+</html>

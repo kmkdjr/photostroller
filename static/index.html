@@ -38,7 +38,7 @@
         </nav>
 
         <div class="masonry row container-fluid">
-          <div class="item col-md-3" v-for="item in filteredPhotoList">
+          <div class="item col-xs-6 col-sm-4 col-md-3 col-lg-2" v-for="item in filteredPhotoList">
             <div class="thumbnail">
               <img src="{{item.url}}">
             {{item.title.substr(0,10)}}
@@ -97,11 +97,11 @@
             }
         });
 
-        vm.$watch('filteredPhotoList', function(){
+        vm.$watch('filteredPhotoList', _.delay(function(){
             var masonry = new Masonry('.masonry', {
                 itemSelector: '.item',
             });
-        });
+        }, 500));
 
 
     </script>

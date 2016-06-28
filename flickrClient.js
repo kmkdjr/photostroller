@@ -2,20 +2,16 @@ var HttpsProxyAgent = require('https-proxy-agent');
 var request = require('request');
 var _ = require('underscore');
 var Photo = require('./Photo');
-var config = require('./config')
+var config = require('./config');
 
 var agent = new HttpsProxyAgent(config.proxy);
 
-var flickrBaseUrl = 'https://api.flickr.com/services/rest/?format=json&nojsoncallback=1';
-var flickSearchUrl = flickrBaseUrl + "&method=flickr.photos.search"
+var flickrBaseUrl = 'https://api.flickr.com/services/rest/';
 
 var getPhotoInfoList = function(params,callback){
-    var paramsText = _.chain(params).pairs().reduce(function(memo, item){
-        return memo+"&"+item[0]+"="+item[1];
-    }, "").value();
-
     request.get({
-        url: flickSearchUrl+paramsText,
+        url: flickrBaseUrl,
+        qs: params,
         agent: agent
     }, function(error, res, body){
         if(error){

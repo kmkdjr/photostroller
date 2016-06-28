@@ -16,10 +16,9 @@ Query.prototype.generate = function(type){
             return _.extend(panoramioBaseQuery, this);
             break;
         case 'flickr':
-            return _.extend(flickrBaseQuery, {bbox: this.minx + "," + this.miny + "," + this.maxx + "," + this.maxy})
+            return _.extend(flickrBaseQuery, {bbox: this.minx + "," + this.miny + "," + this.maxx + "," + this.maxy});
             break;
         default:
-
     }
 };
 
@@ -28,6 +27,7 @@ function parse(value){
 }
 
 var panoramioBaseQuery = {
+    set: "public",
     from: "0",
     to: "50",
     minx:"139.66",
@@ -41,5 +41,8 @@ var panoramioBaseQuery = {
 var flickrBaseQuery = {
     bbox: "139.66,35.57,139.67,35.58",
     extras: "geo,url_t,owner_name",
-    api_key: config.flickrKey
+    format: "json",
+    nojsoncallback: "1",
+    api_key: config.flickrKey,
+    method: "flickr.photos.search"
 };
